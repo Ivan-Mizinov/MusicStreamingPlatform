@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Музыкальная платформа</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+  <h1>Музыкальная библиотека</h1>
+
+  <div class="row mt-4">
+    <div class="col-md-4">
+      <h3>Плейлисты</h3>
+      <ul class="list-group">
+        <li th:each="playlist : ${playlists}"
+            class="list-group-item d-flex justify-content-between align-items-center">
+          <span th:text="${playlist.name}"></span>
+          <a th:href="@{/playlist/{id}(id=${playlist.id})}" class="btn btn-sm btn-outline-primary">Открыть</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-md-8">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="m-0">Треки</h3>
+        <a th:href="@{/upload}" class="btn btn-success">Добавить трек</a>
+      </div>
+
+      <div class="list-group">
+        <div th:each="track : ${tracks}"
+             class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong th:text="${track.title}"></strong><br>
+            <small th:text="${track.artist}"></small>
+          </div>
+          <audio controls>
+            <source th:src="${track.fileUrl}" type="audio/mpeg">
+            Ваш браузер не поддерживает аудио.
+          </audio>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

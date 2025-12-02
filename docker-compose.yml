@@ -1,0 +1,20 @@
+version: '3.7'
+
+services:
+  minio:
+    image: minio/minio
+    container_name: minio-server
+    ports:
+      - "9000:9000"  # API (для приложений)
+      - "9001:9001"  # Веб‑интерфейс (консоль)
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+    volumes:
+      - minio-data:/data  # Постоянный объём для данных
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+
+volumes:
+  minio-data:  # Объявляем объём
+    driver: local
