@@ -3,9 +3,11 @@ package ru.synergy.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import ru.synergy.dto.TrackDto;
 import ru.synergy.model.Track;
 import ru.synergy.service.TrackService;
 
@@ -19,14 +21,13 @@ public class UploadController {
 
     @PostMapping("/upload-track")
     public String uploadTrack(
-            @RequestParam("title") String title,
-            @RequestParam("artist") String artist,
+            @ModelAttribute TrackDto trackDto,
             @RequestParam("file") MultipartFile file,
             Model model) {
         try {
             Track track = new Track();
-            track.setTitle(title);
-            track.setArtist(artist);
+            track.setTitle(trackDto.title());
+            track.setArtist(trackDto.artist());
 
             Track savedTrack = trackService.saveTrack(track, file);
 
