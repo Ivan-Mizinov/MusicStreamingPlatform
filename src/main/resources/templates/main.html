@@ -9,6 +9,20 @@
 <div class="container mt-5">
   <h1>Музыкальная библиотека</h1>
 
+  <form class="mb-4" th:action="@{/}" method="get">
+    <label for="searchInput" class="visually-hidden">Поиск по названию, исполнителю или жанру</label>
+    <div class="input-group">
+      <input type="text"
+             id="searchInput"
+             class="form-control"
+             name="search"
+             th:value="${searchQuery != null} ? ${searchQuery} : ''"
+             placeholder="Поиск по названию, исполнителю или жанру...">
+      <button class="btn btn-outline-secondary" type="submit">Найти</button>
+      <a th:href="@{/}" class="btn btn-outline-danger" th:if="${searchQuery != null}">Очистить</a>
+    </div>
+  </form>
+
   <div class="row mt-4">
     <div class="col-md-4">
       <h3>Плейлисты</h3>

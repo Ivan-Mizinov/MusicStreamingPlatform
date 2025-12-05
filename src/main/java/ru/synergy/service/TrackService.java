@@ -21,6 +21,13 @@ public class TrackService {
         return trackRepository.findAll();
     }
 
+    public List<Track> searchTracks(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return getAllTracks();
+        }
+        return trackRepository.searchTracks(query.trim());
+    }
+
     public Track saveTrack(Track track, MultipartFile file) throws Exception {
         minioService.uploadFile("music-bucket", file.getOriginalFilename(), file);
         track.setFileUrl(minioService.getFileUrl("music-bucket", file.getOriginalFilename()));
