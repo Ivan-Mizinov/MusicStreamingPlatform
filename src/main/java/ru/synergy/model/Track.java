@@ -19,5 +19,6 @@ public class Track {
 
     private String title;
     private String artist;
+    private String genres;
     private String fileUrl;
 }

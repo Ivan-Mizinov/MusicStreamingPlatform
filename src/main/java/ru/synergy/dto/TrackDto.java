@@ -14,6 +14,8 @@ public record TrackDto (
 
         @NotBlank(message = "Исполнитель не может быть пустым")
         @Size(min = 1, max = 100, message = "Имя исполнителя должно быть от 1 до 100 символов")
-        String artist
+        String artist,
+
+        String genre
 ){
 }

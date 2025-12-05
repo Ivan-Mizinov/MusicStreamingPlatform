@@ -28,6 +28,7 @@ public class UploadController {
             Track track = new Track();
             track.setTitle(trackDto.title());
             track.setArtist(trackDto.artist());
+            track.setGenres(trackDto.genre());
 
             Track savedTrack = trackService.saveTrack(track, file);
 

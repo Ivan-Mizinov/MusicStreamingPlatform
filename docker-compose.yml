@@ -5,16 +5,31 @@ services:
     image: minio/minio
     container_name: minio-server
     ports:
-      - "9000:9000"  # API (для приложений)
-      - "9001:9001"  # Веб‑интерфейс (консоль)
+      - "9000:9000"
+      - "9001:9001"
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: admin123
     volumes:
-      - minio-data:/data  # Постоянный объём для данных
+      - minio-data:/data
     command: server /data --console-address ":9001"
     restart: unless-stopped
 
+  postgres:
+    image: postgres:16
+    container_name: postgres-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
 volumes:
-  minio-data:  # Объявляем объём
+  minio-data:
+    driver: local
+  postgres-data:
     driver: local

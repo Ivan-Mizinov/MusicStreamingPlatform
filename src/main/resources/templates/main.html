@@ -33,6 +33,7 @@
           <div>
             <strong th:text="${track.title}"></strong><br>
             <small th:text="${track.artist}"></small>
+            <small th:text="${track.genres}"></small>
           </div>
           <audio controls>
             <source th:src="${track.fileUrl}" type="audio/mpeg">
