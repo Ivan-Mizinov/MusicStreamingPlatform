@@ -24,7 +24,12 @@ public class Playlist {
     @ManyToMany
     @JoinTable(
             name = "playlist_tracks",
-            joinColumns = @JoinColumn(name = "playlist_id")
+            joinColumns = @JoinColumn(name = "playlist_id"),
+            inverseJoinColumns = @JoinColumn(name = "track_id")
     )
     private List<Track> tracks;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

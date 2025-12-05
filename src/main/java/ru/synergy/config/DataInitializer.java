@@ -26,7 +26,7 @@ public class DataInitializer {
                 User admin = new User();
                 admin.setUsername("administrator");
                 admin.setPasswordHash(passwordEncoder.encode("password1"));
-                admin.setRole(Role.ADMIN);
+                admin.setRole(Role.ROLE_ADMIN);
                 userRepository.save(admin);
             }
 
@@ -34,7 +34,7 @@ public class DataInitializer {
                 User user = new User();
                 user.setUsername("FirstUser");
                 user.setPasswordHash(passwordEncoder.encode("password1"));
-                user.setRole(Role.USER);
+                user.setRole(Role.ROLE_USER);
                 userRepository.save(user);
             }
         };

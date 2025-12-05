@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import ru.synergy.service.UserDetailServiceImpl;
 
@@ -32,6 +33,7 @@ public class SecurityConfig {
                         .passwordParameter("password")
                         .defaultSuccessUrl("/", true)
                         .failureUrl("/login?error=true")
+                        .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
@@ -41,6 +43,12 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .invalidSessionUrl("/login?error=session_invalid")
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
+                )
                 .userDetailsService(userDetailsService);
 
         return http.build();

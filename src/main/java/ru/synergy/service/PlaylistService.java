@@ -3,11 +3,13 @@ package ru.synergy.service;
 import org.springframework.stereotype.Service;
 import ru.synergy.model.Playlist;
 import ru.synergy.model.Track;
+import ru.synergy.model.User;
 import ru.synergy.repository.PlaylistRepository;
 import ru.synergy.repository.TrackRepository;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,7 +27,11 @@ public class PlaylistService {
         return playlistRepository.findAll();
     }
 
-    public Playlist createPlaylist(String name, List<Long> trackIds) {
+    public List<Playlist> getUserPlaylists(User user) {
+        return playlistRepository.findByUser(user);
+    }
+
+    public Playlist createPlaylist(String name, List<Long> trackIds, User user) {
         List<Track> tracks = trackRepository.findAllById(trackIds);
 
         Set<Long> foundIds = tracks.stream()
@@ -45,8 +51,13 @@ public class PlaylistService {
         Playlist playlist = new Playlist();
         playlist.setName(name);
         playlist.setTracks(tracks);
+        playlist.setUser(user);
 
         return playlistRepository.save(playlist);
+    }
+
+    public void save(Playlist playlist) {
+        playlistRepository.save(playlist);
     }
 
     public void deletePlaylist(Long id) {
@@ -54,5 +65,9 @@ public class PlaylistService {
             throw new IllegalArgumentException("Плейлист не найден");
         }
         playlistRepository.deleteById(id);
+    }
+
+    public Optional<Playlist> getPlaylistById(Long id) {
+        return playlistRepository.findById(id);
     }
 }
