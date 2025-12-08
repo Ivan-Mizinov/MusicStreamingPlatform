@@ -1,5 +1,6 @@
 package ru.synergy.service;
 
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -9,12 +10,9 @@ import ru.synergy.model.User;
 import ru.synergy.repository.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class UserDetailServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
-
-    public UserDetailServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     @Override
     public @NotNull UserDetails loadUserByUsername(@NotNull String username) throws UsernameNotFoundException {

@@ -1,6 +1,7 @@
 package ru.synergy.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,19 +19,12 @@ import java.security.Principal;
 import java.util.Optional;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/playlist")
 public class PlaylistController {
     private final PlaylistService playlistService;
     private final UserRepository userRepository;
     private final TrackService trackService;
-
-    public PlaylistController(PlaylistService playlistService,
-                              UserRepository userRepository,
-                              TrackService trackService) {
-        this.playlistService = playlistService;
-        this.userRepository = userRepository;
-        this.trackService = trackService;
-    }
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {

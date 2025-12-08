@@ -3,6 +3,7 @@ package ru.synergy.service;
 import io.minio.*;
 import io.minio.errors.*;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,12 +13,9 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 @Service
+@RequiredArgsConstructor
 public class MinioService {
     private final MinioClient minioClient;
-
-    public MinioService(MinioClient minioClient) {
-        this.minioClient = minioClient;
-    }
 
     @PostConstruct
     public void initBucket() {

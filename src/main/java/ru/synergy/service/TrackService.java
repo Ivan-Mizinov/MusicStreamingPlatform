@@ -1,5 +1,6 @@
 package ru.synergy.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.synergy.model.Track;
@@ -9,14 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class TrackService {
     private final TrackRepository trackRepository;
     private final MinioService minioService;
-
-    public TrackService(TrackRepository trackRepository, MinioService minioService) {
-        this.trackRepository = trackRepository;
-        this.minioService = minioService;
-    }
 
     public List<Track> getAllTracks() {
         return trackRepository.findAll();

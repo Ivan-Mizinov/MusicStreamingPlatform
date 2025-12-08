@@ -1,5 +1,6 @@
 package ru.synergy.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,12 +13,9 @@ import ru.synergy.model.Track;
 import ru.synergy.service.TrackService;
 
 @Controller
+@RequiredArgsConstructor
 public class UploadController {
     private final TrackService trackService;
-
-    public UploadController(TrackService trackService) {
-        this.trackService = trackService;
-    }
 
     @PostMapping("/upload-track")
     public String uploadTrack(

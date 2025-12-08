@@ -1,5 +1,6 @@
 package ru.synergy.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,16 +15,11 @@ import ru.synergy.model.User;
 import ru.synergy.repository.UserRepository;
 
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/password")
 public class PasswordController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public PasswordController(UserRepository userRepository,
-                              PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @GetMapping("/change")
     public String showChangePasswordForm(Model model, Authentication authentication) {

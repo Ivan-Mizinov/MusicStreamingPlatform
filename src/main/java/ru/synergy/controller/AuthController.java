@@ -1,5 +1,6 @@
 package ru.synergy.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,15 +13,10 @@ import ru.synergy.model.User;
 import ru.synergy.repository.UserRepository;
 
 @Controller
+@RequiredArgsConstructor
 public class AuthController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    public AuthController(UserRepository userRepository,
-                          PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @PostMapping("/register")
     public String register(@ModelAttribute UserDto request, Model model) {
