@@ -4,27 +4,31 @@ import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.synergy.model.Playlist;
+import ru.synergy.model.Track;
 import ru.synergy.model.User;
 import ru.synergy.repository.UserRepository;
 import ru.synergy.service.PlaylistService;
+import ru.synergy.service.TrackService;
 
 import java.security.Principal;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/playlist")
 public class PlaylistController {
     private final PlaylistService playlistService;
     private final UserRepository userRepository;
+    private final TrackService trackService;
 
     public PlaylistController(PlaylistService playlistService,
-                              UserRepository userRepository) {
+                              UserRepository userRepository,
+                              TrackService trackService) {
         this.playlistService = playlistService;
         this.userRepository = userRepository;
+        this.trackService = trackService;
     }
 
     @GetMapping("/create")
@@ -53,6 +57,54 @@ public class PlaylistController {
         playlist.setUser(user);
         playlistService.save(playlist);
 
+        return "redirect:/";
+    }
+
+    @PostMapping("/add-track")
+    public String addTrackToPlaylist(
+            @RequestParam("fileUrl") String fileUrl,
+            @RequestParam("playlistId") Long playlistId,
+            Principal principal,
+            RedirectAttributes redirectAttributes
+    ) {
+        if (principal == null) {
+            redirectAttributes.addFlashAttribute("error", "Пользователь не авторизован");
+            return "redirect:/login";
+        }
+
+        String username = principal.getName();
+        User user = userRepository.findByUsername(username).orElse(null);
+        if (user == null) {
+            redirectAttributes.addFlashAttribute("error", "Пользователь не найден");
+            return "redirect:/";
+        }
+
+        Optional<Playlist> playlistOpt = playlistService.getPlaylistById(playlistId);
+
+        if (playlistOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Плейлист не найден");
+            return "redirect:/";
+        }
+
+        Optional<Track> trackOpt = trackService.getTrackByFileUrl(fileUrl);
+
+        if (trackOpt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "Трек не найден по URL: " + fileUrl);
+            return "redirect:/";
+        }
+
+        Track track = trackOpt.get();
+        Playlist playlist = playlistOpt.get();
+
+        if (!playlist.getUser().getId().equals(user.getId())) {
+            redirectAttributes.addFlashAttribute("error", "У вас нет доступа к этому плейлисту");
+            return "redirect:/";
+        }
+
+        playlist.getTracks().add(track);
+        playlistService.save(playlist);
+
+        redirectAttributes.addFlashAttribute("success", "Трек добавлен в плейлист!");
         return "redirect:/";
     }
 }

@@ -1,6 +1,7 @@
 package ru.synergy.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.synergy.model.Playlist;
 import ru.synergy.model.Track;
 import ru.synergy.model.User;
@@ -56,6 +57,7 @@ public class PlaylistService {
         return playlistRepository.save(playlist);
     }
 
+    @Transactional
     public void save(Playlist playlist) {
         playlistRepository.save(playlist);
     }

@@ -6,6 +6,7 @@ import ru.synergy.model.Track;
 import ru.synergy.repository.TrackRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TrackService {
@@ -32,5 +33,13 @@ public class TrackService {
         minioService.uploadFile("music-bucket", file.getOriginalFilename(), file);
         track.setFileUrl(minioService.getFileUrl("music-bucket", file.getOriginalFilename()));
         return trackRepository.save(track);
+    }
+
+    public Optional<Track> getTrackById(Long id) {
+        return trackRepository.findById(id);
+    }
+
+    public Optional<Track> getTrackByFileUrl(String fileUrl) {
+        return trackRepository.findByFileUrl(fileUrl);
     }
 }
