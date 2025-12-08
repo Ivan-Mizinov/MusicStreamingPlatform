@@ -1,6 +1,7 @@
 package ru.synergy.controller;
 
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -106,5 +107,16 @@ public class PlaylistController {
 
         redirectAttributes.addFlashAttribute("success", "Трек добавлен в плейлист!");
         return "redirect:/";
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deletePlaylist(@PathVariable Long id) {
+        try {
+            playlistService.deletePlaylist(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            System.err.println("Ошибка удаления плейлиста: " + e.getMessage());
+            return ResponseEntity.status(500).build();
+        }
     }
 }

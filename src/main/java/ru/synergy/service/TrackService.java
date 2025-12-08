@@ -35,10 +35,6 @@ public class TrackService {
         return trackRepository.save(track);
     }
 
-    public Optional<Track> getTrackById(Long id) {
-        return trackRepository.findById(id);
-    }
-
     public Optional<Track> getTrackByFileUrl(String fileUrl) {
         return trackRepository.findByFileUrl(fileUrl);
     }

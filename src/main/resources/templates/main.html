@@ -33,7 +33,18 @@
         <li th:each="playlist : ${playlists}"
             class="list-group-item d-flex justify-content-between align-items-center">
           <span th:text="${playlist.name}"></span>
-          <a th:href="@{/playlist/{id}(id=${playlist.id})}" class="btn btn-sm btn-outline-primary">Открыть</a>
+          <div class="btn-group" role="group">
+            <a th:href="@{/playlist/{id}(id=${playlist.id})}"
+               class="btn btn-sm btn-outline-primary">Открыть</a>
+            <button type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deletePlaylistModal"
+                    th:data-playlist-id="${playlist.id}"
+                    th:data-playlist-name="${playlist.name}">
+              Удалить
+            </button>
+          </div>
         </li>
       </ul>
     </div>
@@ -100,11 +111,72 @@
             </div>
           </div>
         </div>
+
+        <div class="mt-4 text-end">
+          <button type="button" class="btn btn-warning me-2"
+                  data-bs-toggle="modal"
+                  data-bs-target="#changePasswordModal">
+            Сменить пароль
+          </button>
+
+          <a th:href="@{/logout}" class="btn btn-danger">Выйти</a>
+        </div>
       </div>
     </div>
-
   </div>
 </div>
+
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="changePasswordLabel">Сменить пароль</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form th:action="@{/password/change}" method="post">
+          <div class="mb-3">
+            <label for="currentPassword" class="form-label">Текущий пароль</label>
+            <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+          </div>
+          <div class="mb-3">
+            <label for="newPassword" class="form-label">Новый пароль</label>
+            <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+          </div>
+          <div class="mb-3">
+            <label for="confirmNewPassword" class="form-label">Подтвердите новый пароль</label>
+            <input type="password" class="form-control" id="confirmNewPassword" name="confirmNewPassword" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="deletePlaylistModal" inert tabindex="-1" aria-labelledby="deletePlaylistLabel">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deletePlaylistLabel">Подтверждение удаления</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Вы действительно хотите удалить плейлист "<span id="playlistNameToDelete"></span>"?
+        Это действие нельзя отменить.
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="confirmDeleteBtn" class="btn btn-danger">
+          Удалить
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 <script>
@@ -115,6 +187,51 @@
     modal.addEventListener('show.bs.modal', function(event) {
       const button = event.relatedTarget;
       fileUrlInput.value = button.getAttribute('data-file-url');
+    });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const deleteModal = document.getElementById('deletePlaylistModal');
+    const playlistNameSpan = document.getElementById('playlistNameToDelete');
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+    deleteModal.addEventListener('show.bs.modal', () => {
+      deleteModal.removeAttribute('inert');
+    });
+
+    // Обработчик открытия модального окна
+    deleteModal.addEventListener('show.bs.modal', function(event) {
+      const button = event.relatedTarget;
+      const playlistId = button.getAttribute('data-playlist-id');
+      playlistNameSpan.textContent = button.getAttribute('data-playlist-name');
+      confirmDeleteBtn.dataset.playlistId = playlistId;
+    });
+
+    // Обработчик клика по кнопке «Удалить»
+    confirmDeleteBtn.addEventListener('click', function() {
+      const playlistId = this.dataset.playlistId;
+
+      // Отправляем DELETE-запрос через Fetch API
+      const contextPath = window.location.pathname.split('/')[1] || ''; // Получаем первый сегмент пути
+      const url = `/${contextPath}/playlist/delete/${playlistId}`;
+      fetch(url, {
+        method: 'DELETE',
+      })
+              .then(response => {
+                if (response.status === 204) {
+                  const modalInstance = bootstrap.Modal.getInstance(deleteModal);
+                  modalInstance.hide();
+                  location.reload();
+                } else {
+                  alert('Ошибка при удалении плейлиста');
+                }
+              })
+              .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Не удалось связаться с сервером');
+              });
     });
   });
 </script>
