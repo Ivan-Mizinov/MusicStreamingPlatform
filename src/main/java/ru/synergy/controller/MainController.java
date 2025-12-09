@@ -37,6 +37,7 @@ public class MainController {
                                @RequestParam(required = false) String search,
                                Principal principal) {
         User user = getCurrentUser(model, principal);
+        model.addAttribute("currentUser", user);
 
         Optional<UserSubscription> activeSubscriptionOpt = subRepo.findByUserAndIsActive(user, true);
         model.addAttribute("hasActiveSubscription", activeSubscriptionOpt.isPresent());

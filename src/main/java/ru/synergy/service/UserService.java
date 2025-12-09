@@ -42,4 +42,14 @@ public class UserService {
         follower.getFollowing().remove(target);
         userRepository.save(follower);
     }
+
+    @Transactional
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Transactional
+    public User save(User user) {
+        return userRepository.save(user);
+    }
 }
