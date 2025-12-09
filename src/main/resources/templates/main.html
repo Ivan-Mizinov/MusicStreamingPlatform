@@ -23,6 +23,11 @@
     </div>
   </form>
 
+  <div class="alert alert-warning" th:if="${!hasActiveSubscription}" role="alert">
+    <strong>Реклама:</strong> Подпишитесь, чтобы убрать рекламу!
+    <a th:href="@{/subscription}" class="alert-link">Оформить подписку</a>
+  </div>
+
   <div class="row mt-4">
     <div class="col-md-4">
       <h3>Мои плейлисты</h3>
@@ -184,11 +189,30 @@
         </div>
 
         <div class="mt-4 text-end">
+          <div th:if="${hasActiveSubscription}" class="d-inline-block me-3 text-success">
+            <small>
+              <strong>Подписка активна</strong><br>
+              Осталось дней: <span th:text="${daysLeft}"></span>
+            </small>
+          </div>
+
           <button type="button" class="btn btn-warning me-2"
                   data-bs-toggle="modal"
                   data-bs-target="#changePasswordModal">
             Сменить пароль
           </button>
+
+          <a th:if="${!hasActiveSubscription}"
+             th:href="@{/subscription}"
+             class="btn btn-primary me-2">
+            Оформить подписку
+          </a>
+
+          <a th:if="${hasActiveSubscription}"
+             th:href="@{/subscription}"
+             class="btn btn-primary me-2">
+            Продлить подписку
+          </a>
 
           <a th:href="@{/logout}" class="btn btn-danger">Выйти</a>
         </div>

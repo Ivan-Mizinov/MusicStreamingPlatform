@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ru.synergy.model.Playlist;
 import ru.synergy.model.Track;
 import ru.synergy.model.User;
+import ru.synergy.model.UserSubscription;
+import ru.synergy.repository.UserSubscriptionRepository;
 import ru.synergy.service.PlaylistService;
 import ru.synergy.service.TrackReviewService;
 import ru.synergy.service.TrackService;
 import ru.synergy.service.UserService;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -27,12 +30,27 @@ public class MainController {
     private final PlaylistService playlistService;
     private final UserService userService;
     private final TrackReviewService trackReviewService;
+    private final UserSubscriptionRepository subRepo;
 
     @GetMapping("/")
     public String showMainPage(Model model,
                                @RequestParam(required = false) String search,
                                Principal principal) {
         User user = getCurrentUser(model, principal);
+
+        Optional<UserSubscription> activeSubscriptionOpt = subRepo.findByUserAndIsActive(user, true);
+        model.addAttribute("hasActiveSubscription", activeSubscriptionOpt.isPresent());
+
+        activeSubscriptionOpt.ifPresent(activeSubscription -> {
+            LocalDateTime endDate = activeSubscription.getEndDate();
+            long daysLeft = java.time.temporal.ChronoUnit.DAYS.between(
+                    LocalDateTime.now(), endDate);
+            model.addAttribute("daysLeft", Math.max(0, daysLeft));
+        });
+
+        if (activeSubscriptionOpt.isEmpty()) {
+            model.addAttribute("daysLeft", 0);
+        }
 
         List<Track> tracks;
         if (search != null && !search.trim().isEmpty()) {

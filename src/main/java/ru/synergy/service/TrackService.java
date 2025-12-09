@@ -2,6 +2,7 @@ package ru.synergy.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.synergy.model.Track;
 import ru.synergy.repository.TrackRepository;
@@ -26,6 +27,7 @@ public class TrackService {
         return trackRepository.searchTracks(query.trim());
     }
 
+    @Transactional
     public Track saveTrack(Track track, MultipartFile file) throws Exception {
         minioService.uploadFile("music-bucket", file.getOriginalFilename(), file);
         track.setFileUrl(minioService.getFileUrl("music-bucket", file.getOriginalFilename()));
