@@ -116,6 +116,7 @@ public class MainController {
         Playlist playlist = playlistOpt.get();
         List<Track> tracks = playlist.getTracks();
 
+        model.addAttribute("hasActiveSubscription", subRepo.findByUserAndIsActive(user, true).isPresent());
         model.addAttribute("tracks", tracks);
         model.addAttribute("playlists", playlistService.getUserPlaylists(user));
         model.addAttribute("users", userService.findAll());
