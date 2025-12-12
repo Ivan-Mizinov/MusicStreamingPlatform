@@ -35,16 +35,16 @@ public class PlaylistController {
     @PostMapping("/create")
     public String createPlaylist(@Valid @ModelAttribute("playlist") Playlist playlist,
                                  BindingResult result,
-                                 Model model,
+                                 RedirectAttributes redirectAttributes,
                                  Principal principal) {
         if (principal == null) {
-            model.addAttribute("error", "Пользователь не авторизован");
+            redirectAttributes.addFlashAttribute("error", "Пользователь не авторизован");
             return "redirect:/login";
         }
         String username = principal.getName();
         User user = userRepository.findByUsername(username).orElse(null);
         if (user == null) {
-            model.addAttribute("error", "Пользователь не найден");
+            redirectAttributes.addFlashAttribute("error", "Пользователь не найден");
         }
         if (result.hasErrors()) {
             return "playlist/create";

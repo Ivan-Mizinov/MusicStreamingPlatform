@@ -1,9 +1,11 @@
 package ru.synergy.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +21,13 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
-    public String register(@ModelAttribute UserDto request, Model model) {
+    public String register(@Valid @ModelAttribute UserDto request,
+                           BindingResult bindingResult,
+                           Model model) {
+        if (bindingResult.hasErrors()) {
+            return "register";
+        }
+
         if (userRepository.findByUsername(request.username()).isPresent()) {
             model.addAttribute("error", "Пользователь с таким логином уже существует");
             return "register";

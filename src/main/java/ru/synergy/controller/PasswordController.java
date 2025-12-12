@@ -1,18 +1,20 @@
 package ru.synergy.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.synergy.model.User;
 import ru.synergy.repository.UserRepository;
+
+import java.util.Collections;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -63,5 +65,14 @@ public class PasswordController {
         redirectAttributes.addFlashAttribute("success", "Пароль успешно изменён");
         return "redirect:/";
 
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleUsernameNotFound(
+            UsernameNotFoundException ex) {
+        Map<String, String> body = Collections.singletonMap("error", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(body);
     }
 }
