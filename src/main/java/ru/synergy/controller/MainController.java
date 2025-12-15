@@ -39,19 +39,7 @@ public class MainController {
         User user = getCurrentUser(model, principal);
         model.addAttribute("currentUser", user);
 
-        Optional<UserSubscription> activeSubscriptionOpt = subRepo.findByUserAndIsActive(user, true);
-        model.addAttribute("hasActiveSubscription", activeSubscriptionOpt.isPresent());
-
-        activeSubscriptionOpt.ifPresent(activeSubscription -> {
-            LocalDateTime endDate = activeSubscription.getEndDate();
-            long daysLeft = java.time.temporal.ChronoUnit.DAYS.between(
-                    LocalDateTime.now(), endDate);
-            model.addAttribute("daysLeft", Math.max(0, daysLeft));
-        });
-
-        if (activeSubscriptionOpt.isEmpty()) {
-            model.addAttribute("daysLeft", 0);
-        }
+        populateSubscriptionAttributes(model, user);
 
         List<Track> tracks;
         if (search != null && !search.trim().isEmpty()) {
@@ -116,23 +104,47 @@ public class MainController {
         Playlist playlist = playlistOpt.get();
         List<Track> tracks = playlist.getTracks();
 
-        model.addAttribute("hasActiveSubscription", subRepo.findByUserAndIsActive(user, true).isPresent());
+        populateSubscriptionAttributes(model, user);
+
         model.addAttribute("tracks", tracks);
         model.addAttribute("playlists", playlistService.getUserPlaylists(user));
         model.addAttribute("users", userService.findAll());
+
         List<User> following = user.getFollowing();
         model.addAttribute("followingIds", following.stream().map(User::getId).toList());
         model.addAttribute("currentUserId", user.getId());
         model.addAttribute("followedPlaylists", playlistService.getPlaylistsOfUsers(following));
-        model.addAttribute("reviewsByTrack", tracks.stream()
-                .collect(java.util.stream.Collectors.toMap(Track::getId, t -> trackReviewService.getReviews(t.getId()))));
-        model.addAttribute("avgRatings", tracks.stream()
-                .collect(java.util.stream.Collectors.toMap(Track::getId, t -> trackReviewService.getAverageRating(t.getId()))));
-        model.addAttribute("activePlaylistId", id);
 
+        model.addAttribute("reviewsByTrack", tracks.stream()
+                .collect(Collectors.toMap(
+                        Track::getId,
+                        t -> trackReviewService.getReviews(t.getId())
+                )));
+        model.addAttribute("avgRatings", tracks.stream()
+                .collect(Collectors.toMap(
+                        Track::getId,
+                        t -> trackReviewService.getAverageRating(t.getId())
+                )));
+        model.addAttribute("activePlaylistId", id);
         model.addAttribute("playlistName", playlist.getName());
 
         return "main";
+    }
+
+    private void populateSubscriptionAttributes(Model model, User user) {
+        Optional<UserSubscription> activeSubscriptionOpt = subRepo.findByUserAndIsActive(user, true);
+        model.addAttribute("hasActiveSubscription", activeSubscriptionOpt.isPresent());
+
+        activeSubscriptionOpt.ifPresent(activeSubscription -> {
+            LocalDateTime endDate = activeSubscription.getEndDate();
+            long daysLeft = java.time.temporal.ChronoUnit.DAYS.between(
+                    LocalDateTime.now(), endDate);
+            model.addAttribute("daysLeft", Math.max(0, daysLeft));
+        });
+
+        if (activeSubscriptionOpt.isEmpty()) {
+            model.addAttribute("daysLeft", 0);
+        }
     }
 
     private User getCurrentUser(Model model, Principal principal) {
